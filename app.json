@@ -30,6 +30,8 @@
       [
         "expo-splash-screen",
         {
+          // must be a PNG image
+          // should have transparent background
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",

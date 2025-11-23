@@ -1,17 +1,23 @@
-import '../global.css';
+import '@/global.css';
 
+import { Colors } from '@/constants/Colors';
+import { db } from '@/db/client';
+import migrations from '@/drizzle/migrations';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
-import { db } from '../db/client';
-import migrations from '../drizzle/migrations';
+import { Text, useColorScheme, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // 1. Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme() || 'light';
+
+  const theme = Colors[colorScheme] || Colors.light;
+
   // 2. Run migrations (this happens in the background while splash is up)
   const { success, error } = useMigrations(db, migrations);
 
@@ -45,8 +51,15 @@ export default function RootLayout() {
   // The DB is ready. Render the navigation stack.
   // The Splash Screen will fade out, revealing this content.
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'My Exercises' }} />
-    </Stack>
+    <SafeAreaProvider>
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: theme.background },
+          headerTintColor: theme.text,
+        }}
+      >
+        <Stack.Screen name="index" options={{ title: 'My Exercises' }} />
+      </Stack>
+    </SafeAreaProvider>
   );
 }

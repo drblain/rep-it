@@ -1,3 +1,5 @@
+import '../global.css';
+
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';

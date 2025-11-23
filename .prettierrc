@@ -1,0 +1,13 @@
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "plugins": [
+    "prettier-plugin-embed",
+    "prettier-plugin-sql"
+  ],
+  "language": "sqlite",
+  "keywordCase": "upper",
+  "embeddedSqlTags": ["sql"]
+}

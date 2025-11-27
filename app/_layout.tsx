@@ -1,22 +1,20 @@
 import '@/global.css';
 
-import { Colors } from '@/constants/Colors';
 import { db } from '@/db/client';
 import migrations from '@/drizzle/migrations';
+import { useThemeColors } from '@/hooks/useThemeColors';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Text, useColorScheme, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // 1. Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme() || 'light';
-
-  const theme = Colors[colorScheme] || Colors.light;
+  const colors = useThemeColors();
 
   // 2. Run migrations (this happens in the background while splash is up)
   const { success, error } = useMigrations(db, migrations);
@@ -54,11 +52,11 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: theme.background },
-          headerTintColor: theme.text,
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.foreground,
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'My Exercises' }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaProvider>
   );

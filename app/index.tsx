@@ -43,7 +43,7 @@ export default function Index() {
   }) => (
     <TouchableOpacity
       // Don't use border border-border on shadowed cards
-      className="flex-row justify-between items-center bg-card p-4 mb-3 rounded-xl shadow-sm"
+      className="flex-row justify-between items-center bg-background-muted p-4 mb-3 rounded-xl shadow-sm"
       onPress={() => router.push(`/details/${item.id}`)}
     >
       <View>

@@ -76,4 +76,4 @@ export function useThemeColors() {
  * Helper type to extract the structure of our theme
  * Usage: const colors: ThemeColors = useThemeColor();
  */
-export type ThemeColors = typeof COLORS.light;
+export type ThemeColors = { [K in keyof typeof COLORS.light]: string };

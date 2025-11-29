@@ -66,7 +66,7 @@ export default function RootLayout() {
               headerTintColor: colors.foreground,
             }}
           >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
         </SafeAreaProvider>

@@ -1,9 +1,9 @@
 import { ThemeColors, useThemeColors } from '@/hooks/useThemeColors';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { DrawerActions } from '@react-navigation/native';
+import { useNavigation, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   ListRenderItem,
@@ -34,6 +34,7 @@ export default function Index() {
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState('');
 
+  const navigation = useNavigation();
   const router = useRouter();
 
   const renderItem: ListRenderItem<ResultItem> = ({
@@ -89,7 +90,7 @@ export default function Index() {
         </View>
         <TouchableOpacity
           className="w-11 h-11 bg-background-secondary rounded-lg justify-center items-center border border-border"
-          onPress={() => Alert.alert('Context Menu', 'Filter options')}
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
         >
           <Ionicons
             name="options"

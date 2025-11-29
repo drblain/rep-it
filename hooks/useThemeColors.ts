@@ -66,10 +66,7 @@ const COLORS = {
 export function useThemeColors() {
   const { colorScheme } = useColorScheme();
 
-  // Default to 'light' if the system state is undefined
-  const currentTheme = colorScheme ?? 'light';
-
-  return COLORS[currentTheme];
+  return COLORS[colorScheme ?? 'light'];
 }
 
 /**

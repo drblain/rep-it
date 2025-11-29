@@ -12,7 +12,7 @@ export default function ExerciseDetailsLayout() {
         options={{
           title: `${exercise}`,
           headerBackTitle: 'Search',
-          headerTintColor: colors.primary,
+          headerTintColor: colors.foreground,
         }}
       />
       <Tabs

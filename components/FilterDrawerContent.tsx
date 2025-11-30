@@ -11,11 +11,10 @@ export default function FilterDrawerContent(props: any) {
     <View className="flex-1 bg-background">
       <View
         className="p-6 border-b border-border bg-background-secondary mb-2"
-        style={{ paddingTop: insets.top }}
+        style={{ paddingTop: insets.top + 10 }}
       >
-        <Text className="text-2xl font-bold text-foreground">Filters</Text>
-        <Text className="text-sm text-foreground-muted mt-1">
-          Refine your search results
+        <Text className="text-2xl font-bold text-foreground">
+          Filter & Sort
         </Text>
       </View>
       <DrawerContentScrollView

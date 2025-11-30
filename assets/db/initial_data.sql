@@ -62,89 +62,89 @@ VALUES
   (6, 'Core');
 
 -- B. Muscles (Scientific + Common Names)
--- Note: Assumes you have added the 'commonName' column manually.
+-- Note: Assumes you have added the 'common_name' column manually.
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (1, 'Pectoralis Major', 'Chest', 1);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (2, 'Pectoralis Minor', 'Upper Chest', 1);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (3, 'Latissimus Dorsi', 'Lats', 2);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (4, 'Trapezius', 'Traps', 2);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (5, 'Rhomboids', 'Mid Back', 2);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (6, 'Erector Spinae', 'Lower Back', 2);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (7, 'Anterior Deltoid', 'Front Delts', 3);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (8, 'Lateral Deltoid', 'Side Delts', 3);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (9, 'Posterior Deltoid', 'Rear Delts', 3);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (10, 'Biceps Brachii', 'Biceps', 4);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (11, 'Triceps Brachii', 'Triceps', 4);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (17, 'Forearms', 'Forearms', 4);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (12, 'Quadriceps', 'Quads', 5);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (13, 'Hamstrings', 'Hamstrings', 5);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (14, 'Gluteus Maximus', 'Glutes', 5);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (15, 'Calves', 'Calves', 5);
 
 INSERT INTO
-  muscles (id, name, commonName, muscleGroupId)
+  muscles (id, name, common_name, muscle_group_id)
 VALUES
   (16, 'Rectus Abdominis', 'Abs', 6);
 
@@ -222,206 +222,206 @@ VALUES
 -- D. Exercise Muscles Links
 -- Squat
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (1, 12, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (1, 14, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (1, 13, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (1, 16, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (1, 6, 'secondary');
 
 -- Bench Press
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (2, 1, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (2, 7, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (2, 11, 'secondary');
 
 -- Deadlift
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 13, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 14, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 6, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 3, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 4, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 17, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (3, 12, 'secondary');
 
 -- Overhead Press
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (4, 7, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (4, 8, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (4, 11, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (4, 2, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (4, 6, 'secondary');
 
 -- Barbell Row
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 3, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 5, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 4, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 10, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 9, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (5, 17, 'secondary');
 
 -- Pull Up
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (6, 3, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (6, 10, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (6, 5, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (6, 17, 'secondary');
 
 -- Dumbbell Curl
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (7, 10, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (7, 17, 'secondary');
 
 -- Tricep Pushdown
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (8, 11, 'primary');
 
 -- Leg Press
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (9, 12, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (9, 14, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (9, 13, 'secondary');
 
 -- Lat Pulldown
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (10, 3, 'primary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (10, 10, 'secondary');
 
 INSERT INTO
-  exercise_muscles (exerciseId, muscleId, role)
+  exercise_muscles (exercise_id, muscle_id, role)
 VALUES
   (10, 5, 'secondary');
 

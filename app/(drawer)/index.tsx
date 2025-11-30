@@ -28,8 +28,6 @@ export default function Index() {
   const { exercises, isLoading } = useUserExercises();
 
   console.log('Is loading:', isLoading);
-  console.log('Exercises from DB:', exercises.length, exercises);
-
   const filteredExercises = useMemo(() => {
     if (!searchText) return exercises;
     return exercises.filter((exercise) =>
@@ -37,7 +35,7 @@ export default function Index() {
     );
   }, [exercises, searchText]);
 
-  console.log('Filtered List:', filteredExercises.length);
+  console.log('Filtered exercises count:', filteredExercises.length);
 
   const renderItem: ListRenderItem<UserExercise> = ({
     item,

@@ -57,12 +57,12 @@ export const exercise_equipment = sqliteTable(
   (t) => [primaryKey({ columns: [t.exerciseId, t.equipmentId] })]
 );
 
-const users = sqliteTable('users', {
+export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull(),
 });
 
-const user_exercises = sqliteTable('user_exercises', {
+export const user_exercises = sqliteTable('user_exercises', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id')
     .notNull()

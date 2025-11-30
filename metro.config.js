@@ -8,4 +8,7 @@ const config = getDefaultConfig(__dirname);
 // Add support for .sql files
 config.resolver.sourceExts.push('sql');
 
+config.resolver.assetExts.push('db');
+config.resolver.assetExts.push('sqlite');
+
 module.exports = withNativeWind(config, { input: './global.css' });

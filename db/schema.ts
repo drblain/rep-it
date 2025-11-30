@@ -8,7 +8,10 @@ export const muscle_groups = sqliteTable('muscle_groups', {
 export const muscles = sqliteTable('muscles', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   name: text('name').notNull().unique(), // Pectoralis Major, Latissimus Dorsi
-  muscleGroupId: integer('muscle_group_id').references(() => muscle_groups.id),
+  commonName: text('common_name').notNull(), // Pectorals, Lats
+  muscleGroupId: integer('muscle_group_id')
+    .notNull()
+    .references(() => muscle_groups.id),
 });
 
 export const equipment = sqliteTable('equipment', {
@@ -47,10 +50,27 @@ export const exercise_equipment = sqliteTable('exercise_equipment', {
     .primaryKey(),
 });
 
-export const sets = sqliteTable('sets', {
+const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  // Future fields: passwordHash, email, createdAt, etc.
+});
+
+const user_exercises = sqliteTable('user_exercises', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id), // For future multi-user support
   exerciseId: integer('exercise_id')
     .references(() => exercises.id)
+    .notNull(),
+  notes: text('notes'),
+});
+
+export const user_sets = sqliteTable('sets', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userExerciseId: integer('user_exercise_id')
+    .references(() => user_exercises.id)
     .notNull(),
 
   // Data
@@ -61,8 +81,10 @@ export const sets = sqliteTable('sets', {
   timestamp: integer('timestamp'), // Time the specific set was completed
 });
 
-export const images = sqliteTable('images', {
+export const user_exercise_images = sqliteTable('images', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  exerciseId: integer('exercise_id').references(() => exercises.id),
+  userExerciseId: integer('user_exercise_id')
+    .notNull()
+    .references(() => user_exercises.id),
   url: text('url').notNull(),
 });

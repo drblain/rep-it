@@ -1,20 +1,18 @@
 import '@/global.css';
 
-import { db } from '@/db/client';
-import migrations from '@/drizzle/migrations';
+import { initializeDb } from '@/db/client';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
-import { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // 1. Prevent the splash screen from auto-hiding
@@ -25,37 +23,61 @@ export default function RootLayout() {
   const colors = useThemeColors();
 
   // 2. Run migrations (this happens in the background while splash is up)
-  const { success, error } = useMigrations(db, migrations);
+  const [isDbReady, setIsDbReady] = useState(false);
+  const [initError, setInitError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // 3. When the database is ready (or fails), hide the splash screen
-    if (success || error) {
+    const setup = async () => {
+      try {
+        await initializeDb();
+        setIsDbReady(true);
+      } catch (e) {
+        console.error('Database initialization failed:', e);
+        setInitError(e as Error);
+      }
+
       SplashScreen.hideAsync();
-    }
-  }, [success, error]);
+    };
 
-  // 4. Loading State
-  // While 'success' is false, we return nothing (or a generic View).
-  // Since the Splash Screen is covering the phone, the user sees the logo,
-  // not this empty view.
-  if (!success) {
-    return null;
-  }
+    setup();
+  }, []);
 
-  // 5. Error State
-  // If migrations fail, we should probably show the user something
-  // after the splash screen hides.
-  if (error) {
+  if (!isDbReady) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Migration Error: {error.message}</Text>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Setting up database...</Text>
       </View>
     );
   }
 
-  // 6. Success State
-  // The DB is ready. Render the navigation stack.
-  // The Splash Screen will fade out, revealing this content.
+  if (initError) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: 'red',
+            marginBottom: 10,
+          }}
+        >
+          Database Error
+        </Text>
+        <Text style={{ textAlign: 'center', color: '#333' }}>
+          {initError.message}
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View className={`flex-1 ${colorScheme}`}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

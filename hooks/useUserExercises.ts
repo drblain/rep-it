@@ -22,11 +22,7 @@ export function useUserExercises() {
       .select({
         id: sql<string>`cast(${exercises.id} AS text)`,
         name: exercises.name,
-
-        // --- THIS LINE WAS LIKELY MISSING ---
         muscle_group: muscle_groups.name,
-        // ------------------------------------
-
         target_muscle: sql<string>`
           COALESCE(
             ${muscles.commonName},

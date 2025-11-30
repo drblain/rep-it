@@ -6,9 +6,9 @@ const { withNativeWind } = require('nativewind/metro');
 const config = getDefaultConfig(__dirname);
 
 // Add support for .sql files
-config.resolver.sourceExts.push('sql');
+config.resolver.sourceExts.push('sqlite');
 
 config.resolver.assetExts.push('db');
-config.resolver.assetExts.push('sqlite');
+config.resolver.assetExts.push('sql');
 
 module.exports = withNativeWind(config, { input: './global.css' });

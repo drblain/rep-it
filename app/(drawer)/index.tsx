@@ -27,12 +27,17 @@ export default function Index() {
 
   const { exercises, isLoading } = useUserExercises();
 
+  console.log('Is loading:', isLoading);
+  console.log('Exercises from DB:', exercises.length, exercises);
+
   const filteredExercises = useMemo(() => {
     if (!searchText) return exercises;
     return exercises.filter((exercise) =>
       exercise.name.toLowerCase().includes(searchText.toLowerCase())
     );
   }, [exercises, searchText]);
+
+  console.log('Filtered List:', filteredExercises.length);
 
   const renderItem: ListRenderItem<UserExercise> = ({
     item,

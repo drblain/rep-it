@@ -27,15 +27,17 @@ export default function Index() {
 
   const { exercises, isLoading } = useUserExercises();
 
-  console.log('Is loading:', isLoading);
   const filteredExercises = useMemo(() => {
     if (!searchText) return exercises;
-    return exercises.filter((exercise) =>
-      exercise.name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    return exercises.filter((exercise) => {
+      const lowerSearchText = searchText.toLowerCase();
+      return (
+        exercise.name.toLowerCase().includes(lowerSearchText) ||
+        exercise.muscle_group.toLowerCase().includes(lowerSearchText) ||
+        exercise.target_muscle.toLowerCase().includes(lowerSearchText)
+      );
+    });
   }, [exercises, searchText]);
-
-  console.log('Filtered exercises count:', filteredExercises.length);
 
   const renderItem: ListRenderItem<UserExercise> = ({
     item,

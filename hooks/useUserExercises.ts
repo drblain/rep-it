@@ -12,8 +12,8 @@ import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 export interface UserExercise {
   id: string;
   name: string;
-  muscle_group: string | null;
-  target_muscle: string | null;
+  muscle_group: string;
+  target_muscle: string;
 }
 
 export function useUserExercises() {

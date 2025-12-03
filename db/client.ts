@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { drizzle, type ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
-import { deleteDatabaseAsync, openDatabaseSync } from 'expo-sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
 
 import initialData from '../assets/db/initial_data.sql';
 import migrations from '../drizzle/migrations';
@@ -12,13 +12,13 @@ const DB_NAME = 'fitness_app.db';
 export let db: ExpoSQLiteDatabase<typeof schema> = null as any;
 
 export async function initializeDb() {
-  try {
-    console.log('Wiping database to ensure clean state...');
-    await deleteDatabaseAsync(DB_NAME);
-  } catch (e) {
-    // Ignore error if DB didn't exist yet
-    console.log('Database wipe skipped (not found).');
-  }
+  // try {
+  //   console.log('Wiping database to ensure clean state...');
+  //   await deleteDatabaseAsync(DB_NAME);
+  // } catch (e) {
+  //   // Ignore error if DB didn't exist yet
+  //   console.log('Database wipe skipped (not found).');
+  // }
   const expoDb = openDatabaseSync(DB_NAME);
   db = drizzle(expoDb, { schema });
 

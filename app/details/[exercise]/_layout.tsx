@@ -1,13 +1,14 @@
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, Tabs, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
 
 export default function ExerciseDetailsLayout() {
   const colors = useThemeColors();
   const { exercise } = useLocalSearchParams();
 
   return (
-    <>
+    <View className="flex-1">
       <Stack.Screen
         options={{
           title: `${exercise}`,
@@ -71,6 +72,6 @@ export default function ExerciseDetailsLayout() {
           }}
         />
       </Tabs>
-    </>
+    </View>
   );
 }

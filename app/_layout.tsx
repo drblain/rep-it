@@ -48,24 +48,8 @@ export default function RootLayout() {
 
   if (initError) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-            color: 'red',
-            marginBottom: 10,
-          }}
-        >
-          Database Error
-        </Text>
+      <View className="flex-1 justify-center align-middle p-20">
+        <Text className="text-xl font-bold text-red mb-10">Database Error</Text>
         <Text style={{ textAlign: 'center', color: '#333' }}>
           {initError.message}
         </Text>

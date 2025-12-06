@@ -1,6 +1,6 @@
 import '@/global.css';
 
-import { initializeDb } from '@/db/client';
+import { useDatabaseInit } from '@/hooks/useDatabaseInit';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import {
   DarkTheme,
@@ -11,7 +11,6 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
-import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -23,24 +22,7 @@ export default function RootLayout() {
   const colors = useThemeColors();
 
   // 2. Run migrations (this happens in the background while splash is up)
-  const [isDbReady, setIsDbReady] = useState(false);
-  const [initError, setInitError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    const setup = async () => {
-      try {
-        await initializeDb();
-        setIsDbReady(true);
-      } catch (e) {
-        console.error('Database initialization failed:', e);
-        setInitError(e as Error);
-      }
-
-      SplashScreen.hideAsync();
-    };
-
-    setup();
-  }, []);
+  const { isDbReady, initError } = useDatabaseInit();
 
   if (!isDbReady) {
     return null;

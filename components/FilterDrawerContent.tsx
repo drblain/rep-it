@@ -1,11 +1,25 @@
+import { FilterFn, useFilters } from '@/context/FilterContext';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function FilterDrawerContent(props: any) {
+interface FilterDrawerContentProps {
+  onClose: () => void;
+  drawerProps: any;
+}
+
+export default function FilterDrawerContent({
+  onClose,
+  drawerProps,
+}: FilterDrawerContentProps) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
+  const { activeFilters, setActiveFilters } = useFilters();
+
+  const collectFilters: () => FilterFn[] = () => {
+    return [];
+  };
 
   return (
     <View className="flex-1 bg-background">
@@ -13,14 +27,16 @@ export default function FilterDrawerContent(props: any) {
         className="p-6 border-b border-border bg-background-secondary mb-2"
         style={{ paddingTop: insets.top + 10 }}
       >
-        <Text className="text-2xl font-bold text-foreground">
-          Filter & Sort
-        </Text>
+        <Text className="text-2xl font-bold text-foreground">Filters</Text>
       </View>
       <DrawerContentScrollView
-        {...props}
+        {...drawerProps}
         contentContainerStyle={{ paddingTop: 0 }}
-      ></DrawerContentScrollView>
+      >
+        {
+          // Filter items go into this scrollable list
+        }
+      </DrawerContentScrollView>
       <View
         className="p-4 border-t border-border"
         style={{ paddingBottom: insets.bottom }}
@@ -33,8 +49,26 @@ export default function FilterDrawerContent(props: any) {
             textAlign: 'center',
             fontWeight: 'bold',
           }}
-          onPress={() => props.navigation.closeDrawer()}
+          onPress={() => {
+            drawerProps.navigation.closeDrawer();
+            setActiveFilters(collectFilters());
+          }}
         />
+        {activeFilters.length > 0 && (
+          <DrawerItem
+            label="Clear Filters"
+            style={{ backgroundColor: colors.primary, borderRadius: 12 }}
+            labelStyle={{
+              color: colors.primaryForeground,
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}
+            onPress={() => {
+              drawerProps.navigation.closeDrawer();
+              setActiveFilters([]);
+            }}
+          />
+        )}
       </View>
     </View>
   );

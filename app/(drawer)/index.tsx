@@ -17,25 +17,39 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ExerciseListItem from '@/components/ExerciseListItem';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import SearchBar from '@/components/SearchBar';
+import { useFilters } from '@/context/FilterContext';
 
 export default function Index() {
   const colors: ThemeColors = useThemeColors();
   const insets = useSafeAreaInsets();
   const [searchText, setSearchText] = useState('');
 
+  const defaultFilter = (exercise: UserExercise, text: string) => {
+    if (!text) return true;
+
+    const lowerText = text.toLowerCase();
+    return (
+      exercise.name.toLowerCase().includes(lowerText) ||
+      exercise.muscle_group.toLowerCase().includes(lowerText) ||
+      exercise.target_muscle.toLowerCase().includes(lowerText)
+    );
+  };
+
+  const { activeFilters } = useFilters();
+
   const navigation = useNavigation();
 
   const { exercises, isLoading } = useUserExercises();
 
   const filteredExercises = useMemo(() => {
-    if (!searchText) return exercises;
     return exercises.filter((exercise) => {
-      const lowerSearchText = searchText.toLowerCase();
-      return (
-        exercise.name.toLowerCase().includes(lowerSearchText) ||
-        exercise.muscle_group.toLowerCase().includes(lowerSearchText) ||
-        exercise.target_muscle.toLowerCase().includes(lowerSearchText)
-      );
+      if (!defaultFilter(exercise, searchText)) return false;
+
+      for (let i = 0; i < activeFilters.length; ++i) {
+        if (!activeFilters[i](exercise)) return false;
+      }
+
+      return true;
     });
   }, [exercises, searchText]);
 

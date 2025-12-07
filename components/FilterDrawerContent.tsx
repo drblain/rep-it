@@ -3,6 +3,7 @@ import { FilterId, useFilters } from '@/context/FilterContext';
 import { FILTER_OPTIONS } from '@/context/exerciseFilters';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,9 +17,16 @@ export default function FilterDrawerContent({
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { activeFilterIds, toggleFilter, clearFilters } = useFilters();
+  const [draftFilters, setDraftFilters] = useState<FilterId[]>([]);
 
-  const collectFilters: () => FilterId[] = () => {
-    return [];
+  const toggleDraftFilter = (filterId: FilterId) => {
+    setDraftFilters((currDraftFilters) => {
+      if (currDraftFilters.includes(filterId)) {
+        return currDraftFilters.filter((id) => id !== filterId);
+      }
+
+      return [...currDraftFilters, filterId];
+    });
   };
 
   return (
@@ -33,19 +41,21 @@ export default function FilterDrawerContent({
         {...drawerProps}
         contentContainerStyle={{ paddingTop: 0 }}
       >
-        {FILTER_OPTIONS.map((section) => {
+        {FILTER_OPTIONS.map((section) => (
           <View key={section.label} className="mb-4">
-            <Text className="font-bold text-lg px-4 mb-2">{section.label}</Text>
+            <Text className="font-bold text-lg px-4 mb-2 text-foreground opacity-60 uppercase tracking-wider">
+              {section.label}
+            </Text>
             {section.data.map((filter) => (
               <FilterItem
                 key={filter.id}
                 label={filter.label}
                 isActive={activeFilterIds.includes(filter.id)}
-                onPress={() => toggleFilter(filter.id)}
+                onPress={() => toggleDraftFilter(filter.id)}
               />
             ))}
-          </View>;
-        })}
+          </View>
+        ))}
       </DrawerContentScrollView>
       <View
         className="p-4 border-t border-border"
@@ -53,7 +63,11 @@ export default function FilterDrawerContent({
       >
         <DrawerItem
           label="Apply Filters"
-          style={{ backgroundColor: colors.primary, borderRadius: 12 }}
+          style={{
+            backgroundColor: colors.primary,
+            borderRadius: 12,
+            marginBottom: 8,
+          }}
           labelStyle={{
             color: colors.primaryForeground,
             textAlign: 'center',
@@ -61,12 +75,12 @@ export default function FilterDrawerContent({
           }}
           onPress={() => {
             drawerProps.navigation.closeDrawer();
-            collectFilters().forEach((filterId: FilterId) => {
+            draftFilters.forEach((filterId: FilterId) => {
               toggleFilter(filterId);
             });
           }}
         />
-        {activeFilterIds.length > 0 && (
+        {draftFilters.length > 0 && (
           <DrawerItem
             label="Clear Filters"
             style={{ backgroundColor: colors.primary, borderRadius: 12 }}

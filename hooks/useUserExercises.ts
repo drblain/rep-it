@@ -67,10 +67,12 @@ export function useUserExercises(
             name: exercises.name,
             is_favorite: user_exercises.isFavorite,
             muscle_group: muscle_groups.name,
-            target_muscle: sql<string>`
-              COALESCE(
-                ${muscles.commonName},
-                ${muscles.name}
+            muscles_data: sql<string>`
+              GROUP_CONCAT(
+                ${exercise_muscles.role} || ':' || COALESCE(
+                  ${muscles.commonName},
+                  ${muscles.name}
+                )
               )
             `,
           })
@@ -78,10 +80,7 @@ export function useUserExercises(
           .leftJoin(exercises, eq(user_exercises.exerciseId, exercises.id))
           .leftJoin(
             exercise_muscles,
-            and(
-              eq(exercises.id, exercise_muscles.exerciseId),
-              eq(exercise_muscles.role, 'primary')
-            )
+            eq(exercises.id, exercise_muscles.exerciseId)
           )
           .leftJoin(muscles, eq(exercise_muscles.muscleId, muscles.id))
           .leftJoin(muscle_groups, eq(muscles.muscleGroupId, muscle_groups.id))
@@ -91,6 +90,27 @@ export function useUserExercises(
           .limit(PAGE_SIZE)
           .offset(pageNum * PAGE_SIZE);
 
+        const processedResults = results.map((row) => {
+          const allMuscles = row.muscles_data
+            ? row.muscles_data.split(',')
+            : [];
+
+          const primaryEntry = allMuscles.find((muscle) =>
+            muscle.startsWith('primary:')
+          );
+
+          const targetMuscle = primaryEntry
+            ? primaryEntry.split(':')[1]
+            : allMuscles[0]
+              ? allMuscles[0].split(':')[1]
+              : 'Unknown';
+
+          return {
+            ...row,
+            target_muscle: targetMuscle,
+          };
+        });
+
         if (results.length < PAGE_SIZE) {
           setHasMore(false);
         }
@@ -98,8 +118,8 @@ export function useUserExercises(
         setData(
           (previousData) =>
             (pageNum === 0
-              ? results
-              : [...previousData, ...results]) as UserExercise[]
+              ? processedResults
+              : [...previousData, ...processedResults]) as UserExercise[]
         );
       } catch (error) {
         console.log('Failed to fetch exercises: ', error);

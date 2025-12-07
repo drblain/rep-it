@@ -1,80 +1,78 @@
-import { FilterId } from '@/context/FilterContext';
+import { db } from '@/db/client';
 import * as dbConsts from '@/db/constants';
 import {
   exercise_muscles,
+  exercises,
   muscle_groups,
   muscles,
   user_exercises,
 } from '@/db/schema';
-import { and, eq, SQL } from 'drizzle-orm';
-
-export const FILTER_IDS = {
-  FAVORITES: 'favorites',
-  GROUP_CHEST: 'group_chest',
-  GROUP_LEGS: 'group_legs',
-  GROUP_BACK: 'group_back',
-  MUSCLE_BICEPS: 'muscle_biceps',
-  MUSCLE_TRICEPS: 'muscle_triceps',
-  PRIMARY_BICEPS: 'primary_biceps',
+import { and, eq, exists } from 'drizzle-orm';
+const PREFIXES = {
+  FAVORITE: 'fav',
+  GROUP: 'group',
+  ANY_MUSCLE: 'any',
+  PRIMARY_MUSCLE: 'primary',
 } as const;
 
-export const getSqlConditionForFilterId = (
-  filterId: FilterId
-): SQL | undefined => {
-  switch (filterId) {
-    case FILTER_IDS.FAVORITES:
+export const makeFilterId = (prefix: string, value: string | number) =>
+  `${prefix}:${value}`;
+
+export const FILTER_OPTIONS = [
+  {
+    label: 'General',
+    data: [
+      { label: 'Favorites Only', id: makeFilterId(PREFIXES.FAVORITE, 'true') },
+    ],
+  },
+  {
+    label: 'Muscle Groups',
+    data: Object.entries(dbConsts.MUSCLE_GROUP_LABELS).map(([id, label]) => ({
+      label,
+      id: makeFilterId(PREFIXES.GROUP, id),
+    })),
+  },
+  {
+    label: 'Primary Muscle',
+    data: Object.entries(dbConsts.MUSCLE_COMMON_NAMES).map(([id, label]) => ({
+      label: `${label} (Primary)`,
+      id: makeFilterId(PREFIXES.PRIMARY_MUSCLE, id),
+    })),
+  },
+  {
+    label: 'Any Role (Primary or Secondary)',
+    data: Object.entries(dbConsts.MUSCLE_COMMON_NAMES).map(([id, label]) => ({
+      label: `${label} (Any)`,
+      id: makeFilterId(PREFIXES.ANY_MUSCLE, id),
+    })),
+  },
+];
+
+export const getSqlConditionForFilterId = (filterId: string) => {
+  const [prefix, value] = filterId.split(':');
+  const numericValue = parseInt(value, 10);
+
+  switch (prefix) {
+    case PREFIXES.FAVORITE:
       return eq(user_exercises.isFavorite, true);
-
-    case FILTER_IDS.GROUP_CHEST:
-      return eq(
-        muscle_groups.name,
-        dbConsts.MUSCLE_GROUP_LABELS[dbConsts.MUSCLE_GROUPS.CHEST]
+    case PREFIXES.GROUP:
+      return eq(muscle_groups.id, numericValue);
+    case PREFIXES.PRIMARY_MUSCLE:
+      return eq(muscles.id, numericValue);
+    case PREFIXES.ANY_MUSCLE:
+      return exists(
+        db
+          .select()
+          .from(exercise_muscles)
+          .where(
+            and(
+              eq(exercise_muscles.exerciseId, exercises.id),
+              eq(exercise_muscles.muscleId, numericValue)
+            )
+          )
       );
-
-    case FILTER_IDS.GROUP_LEGS:
-      return eq(
-        muscle_groups.name,
-        dbConsts.MUSCLE_GROUP_LABELS[dbConsts.MUSCLE_GROUPS.LEGS]
-      );
-
-    case FILTER_IDS.GROUP_BACK:
-      return eq(
-        muscle_groups.name,
-        dbConsts.MUSCLE_GROUP_LABELS[dbConsts.MUSCLE_GROUPS.BACK]
-      );
-
-    // More muscle group filters here
-
-    case FILTER_IDS.MUSCLE_BICEPS:
-      return eq(
-        muscles.commonName,
-        dbConsts.MUSCLE_COMMON_NAMES[dbConsts.MUSCLES.BICEPS_BRACHII]
-      );
-
-    case FILTER_IDS.MUSCLE_TRICEPS:
-      return eq(
-        muscles.commonName,
-        dbConsts.MUSCLE_COMMON_NAMES[dbConsts.MUSCLES.TRICEPS_BRACHII]
-      );
-
-    // More muscle inclusion filters here
-
-    case FILTER_IDS.PRIMARY_BICEPS:
-      const sqlCondition = getSqlConditionForFilterId(FILTER_IDS.MUSCLE_BICEPS);
-
-      if (!sqlCondition) {
-        return undefined;
-      }
-
-      return and(
-        sqlCondition,
-        eq(exercise_muscles.role, dbConsts.EXERCISE_ROLES.PRIMARY)
-      );
-
-    // More primary muscle filters here
 
     default:
-      console.log('Got invalid filter ID: ', filterId);
       return undefined;
   }
 };

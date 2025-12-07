@@ -29,6 +29,7 @@ export default function FilterDrawerContent({
     });
   };
 
+  // TODO: This is broken. Sometimes a filter gets "stuck".
   const handleApply = () => {
     drawerProps.navigation.closeDrawer();
     draftFilters.forEach((filterId: FilterId) => {
@@ -55,21 +56,26 @@ export default function FilterDrawerContent({
         {...drawerProps}
         contentContainerStyle={{ paddingTop: 0 }}
       >
-        {FILTER_OPTIONS.map((section) => (
-          <View key={section.label} className="mb-4">
-            <Text className="font-bold text-lg px-4 mb-2 text-foreground opacity-60 uppercase tracking-wider">
-              {section.label}
-            </Text>
-            {section.data.map((filter) => (
-              <FilterItem
-                key={filter.id}
-                label={filter.label}
-                isActive={activeFilterIds.includes(filter.id)}
-                onPress={() => toggleDraftFilter(filter.id)}
-              />
-            ))}
-          </View>
-        ))}
+        {
+          // TODO: The breakup of the sections here sucks
+          // maybe make it so just the muscles are listed and when the user selects one a secondary box appears
+          // this second box would be to select that its the primary mover in the exercise
+          FILTER_OPTIONS.map((section) => (
+            <View key={section.label} className="mb-4">
+              <Text className="font-bold text-lg px-4 mb-2 text-foreground opacity-60 uppercase tracking-wider">
+                {section.label}
+              </Text>
+              {section.data.map((filter) => (
+                <FilterItem
+                  key={filter.id}
+                  label={filter.label}
+                  isActive={activeFilterIds.includes(filter.id)}
+                  onPress={() => toggleDraftFilter(filter.id)}
+                />
+              ))}
+            </View>
+          ))
+        }
       </DrawerContentScrollView>
       <View
         className="p-4 border-t border-border"

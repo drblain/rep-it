@@ -1,18 +1,15 @@
-import { FilterId } from '@/context/FilterContext';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export interface FilterItemProps {
-  key: FilterId;
   label: string;
   isActive: boolean;
   onPress: () => void;
 }
 
 export default function FilterItem({
-  key,
   label,
   isActive,
   onPress,
@@ -20,15 +17,23 @@ export default function FilterItem({
   const colors = useThemeColors();
 
   return (
-    <View className="h-20 flex-row items-center">
-      <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      className="h-20 flex-row items-center py-3 px-4 active:bg-background-muted rounded-lg"
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View className="mr-3">
         <Ionicons
-          name={isActive ? 'checkmark-done' : 'checkmark'}
+          name={isActive ? 'checkbox' : 'square-outline'}
           size={20}
-          color={colors.secondary}
+          color={isActive ? colors.primary : colors.foregroundMuted}
         />
-      </TouchableOpacity>
-      <Text className="text-lg font-medium">{label}</Text>
-    </View>
+      </View>
+      <Text
+        className={`text-lg ${isActive ? 'text-foreground font-semibold' : 'text-foreground-secondary font-medium'}`}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 }

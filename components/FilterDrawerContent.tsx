@@ -29,6 +29,20 @@ export default function FilterDrawerContent({
     });
   };
 
+  const handleApply = () => {
+    drawerProps.navigation.closeDrawer();
+    draftFilters.forEach((filterId: FilterId) => {
+      toggleFilter(filterId);
+    });
+    setDraftFilters([]);
+  };
+
+  const handleClear = () => {
+    drawerProps.navigation.closeDrawer();
+    setDraftFilters([]);
+    clearFilters();
+  };
+
   return (
     <View className="flex-1 bg-background">
       <View
@@ -73,12 +87,7 @@ export default function FilterDrawerContent({
             textAlign: 'center',
             fontWeight: 'bold',
           }}
-          onPress={() => {
-            drawerProps.navigation.closeDrawer();
-            draftFilters.forEach((filterId: FilterId) => {
-              toggleFilter(filterId);
-            });
-          }}
+          onPress={handleApply}
         />
         {draftFilters.length > 0 && (
           <DrawerItem
@@ -89,10 +98,7 @@ export default function FilterDrawerContent({
               textAlign: 'center',
               fontWeight: 'bold',
             }}
-            onPress={() => {
-              drawerProps.navigation.closeDrawer();
-              clearFilters();
-            }}
+            onPress={handleClear}
           />
         )}
       </View>

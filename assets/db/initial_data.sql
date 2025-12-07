@@ -425,6 +425,11 @@ INSERT INTO
 VALUES
   (10, 5, 'secondary');
 
+INSERT INTO
+  user_exercises (user_id, exercise_id, is_favorite)
+VALUES
+  (1, 10, 1);
+
 -- E. Guest User
 INSERT INTO
   users (id, name)

@@ -8,6 +8,20 @@
       "when": 1764530603859,
       "tag": "0000_warm_annihilus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1765114439367,
+      "tag": "0001_massive_wallop",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1765115376578,
+      "tag": "0002_even_bulldozer",
+      "breakpoints": true
     }
   ]
 }

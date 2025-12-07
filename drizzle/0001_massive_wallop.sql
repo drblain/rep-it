@@ -1,0 +1,1 @@
+ALTER TABLE `user_exercises` ADD `is_favorite` integer DEFAULT false;

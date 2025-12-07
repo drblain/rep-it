@@ -59,7 +59,7 @@ export const exercise_equipment = sqliteTable(
 
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
 });
 
 export const user_exercises = sqliteTable('user_exercises', {
@@ -71,6 +71,7 @@ export const user_exercises = sqliteTable('user_exercises', {
     .references(() => exercises.id)
     .notNull(),
   notes: text('notes'),
+  isFavorite: integer('is_favorite', { mode: 'boolean' }).default(false),
 });
 
 export const user_sets = sqliteTable('user_sets', {

@@ -39,7 +39,8 @@ export default function Index() {
 
   const navigation = useNavigation();
 
-  const { exercises, isLoading } = useUserExercises();
+  // TODO, use an actual non-guest user
+  const { exercises, isLoading } = useUserExercises(1);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter((exercise) => {

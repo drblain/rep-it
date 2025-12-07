@@ -1,3 +1,5 @@
+import { getSqlConditionForFilterId } from '@/context/exerciseFilters';
+import { FilterId } from '@/context/FilterContext';
 import { db } from '@/db/client';
 import {
   exercise_muscles,
@@ -6,9 +8,8 @@ import {
   muscles,
   user_exercises,
 } from '@/db/schema';
-
-import { and, eq, sql } from 'drizzle-orm';
-import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
+import { and, asc, eq, like, or, sql } from 'drizzle-orm';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface UserExercise {
   id: string;
@@ -18,41 +19,112 @@ export interface UserExercise {
   target_muscle: string;
 }
 
-export function useUserExercises(userId: number) {
-  const { data } = useLiveQuery(
-    db
-      .select({
-        id: sql<string>`cast(${user_exercises.id} AS text)`,
-        name: exercises.name,
-        is_favorite: user_exercises.isFavorite,
-        muscle_group: muscle_groups.name,
-        target_muscle: sql<string>`
-          COALESCE(
-            ${muscles.commonName},
-            ${muscles.name}
+const PAGE_SIZE = 20;
+
+export function useUserExercises(
+  userId: number,
+  filterText: string,
+  activeFilterIds: FilterId[]
+) {
+  const [data, setData] = useState<UserExercise[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchPage = useCallback(
+    async (pageNum: number, isRefresh: boolean = false) => {
+      if (!isRefresh && (!hasMore || isLoading)) {
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const conditions = [eq(user_exercises.userId, userId)];
+
+        if (filterText) {
+          const searchPattern = `%${filterText}%`;
+          conditions.push(
+            or(
+              like(exercises.name, searchPattern),
+              like(muscle_groups.name, searchPattern),
+              like(muscles.commonName, searchPattern),
+              like(muscles.name, searchPattern)
+            )!
+          );
+        }
+
+        activeFilterIds.forEach((filterId: FilterId) => {
+          const sqlCondition = getSqlConditionForFilterId(filterId);
+          if (sqlCondition) {
+            conditions.push(sqlCondition);
+          }
+        });
+
+        const results = await db
+          .select({
+            id: sql<string>`cast(${user_exercises.id} AS text)`,
+            name: exercises.name,
+            is_favorite: user_exercises.isFavorite,
+            muscle_group: muscle_groups.name,
+            target_muscle: sql<string>`
+              COALESCE(
+                ${muscles.commonName},
+                ${muscles.name}
+              )
+            `,
+          })
+          .from(user_exercises)
+          .leftJoin(exercises, eq(user_exercises.exerciseId, exercises.id))
+          .leftJoin(
+            exercise_muscles,
+            and(
+              eq(exercises.id, exercise_muscles.exerciseId),
+              eq(exercise_muscles.role, 'primary')
+            )
           )
-        `,
-      })
-      .from(user_exercises)
-      .where(eq(user_exercises.exerciseId, userId))
-      .leftJoin(exercises, eq(user_exercises.exerciseId, exercises.id))
-      .leftJoin(
-        exercise_muscles,
-        and(
-          eq(exercises.id, exercise_muscles.exerciseId),
-          eq(exercise_muscles.role, 'primary')
-        )
-      )
-      .leftJoin(muscles, eq(exercise_muscles.muscleId, muscles.id))
-      .leftJoin(muscle_groups, eq(muscles.muscleGroupId, muscle_groups.id))
-      .groupBy(exercises.id)
+          .leftJoin(muscles, eq(exercise_muscles.muscleId, muscles.id))
+          .leftJoin(muscle_groups, eq(muscles.muscleGroupId, muscle_groups.id))
+          .where(and(...conditions))
+          .orderBy(asc(exercises.name))
+          .groupBy(exercises.id)
+          .limit(PAGE_SIZE)
+          .offset(pageNum * PAGE_SIZE);
+
+        if (results.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+
+        setData(
+          (previousData) =>
+            (pageNum === 0
+              ? results
+              : [...previousData, ...results]) as UserExercise[]
+        );
+      } catch (error) {
+        console.log('Failed to fetch exercises: ', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [userId, filterText, activeFilterIds, hasMore, isLoading]
   );
-  data;
 
-  const isLoading = data === undefined;
-
-  return {
-    exercises: (data ?? []) as UserExercise[], // Explicitly cast if needed, but inference should work
-    isLoading,
+  const refresh = () => {
+    setPage(0);
+    setHasMore(true);
+    fetchPage(0, true);
   };
+
+  useEffect(refresh, [filterText, activeFilterIds]);
+
+  const loadMore = () => {
+    if (!isLoading && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchPage(nextPage);
+    }
+  };
+
+  return { exercises: data, loadMore, refresh, isLoading, hasMore };
 }

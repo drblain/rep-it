@@ -1,4 +1,4 @@
-import { FilterFn, useFilters } from '@/context/FilterContext';
+import { FilterId, useFilters } from '@/context/FilterContext';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Text, View } from 'react-native';
@@ -15,9 +15,9 @@ export default function FilterDrawerContent({
 }: FilterDrawerContentProps) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { activeFilters, setActiveFilters } = useFilters();
+  const { activeFilterIds, toggleFilter, clearFilters } = useFilters();
 
-  const collectFilters: () => FilterFn[] = () => {
+  const collectFilters: () => FilterId[] = () => {
     return [];
   };
 
@@ -51,10 +51,12 @@ export default function FilterDrawerContent({
           }}
           onPress={() => {
             drawerProps.navigation.closeDrawer();
-            setActiveFilters(collectFilters());
+            collectFilters().forEach((filterId: FilterId) => {
+              toggleFilter(filterId);
+            });
           }}
         />
-        {activeFilters.length > 0 && (
+        {activeFilterIds.length > 0 && (
           <DrawerItem
             label="Clear Filters"
             style={{ backgroundColor: colors.primary, borderRadius: 12 }}
@@ -65,7 +67,7 @@ export default function FilterDrawerContent({
             }}
             onPress={() => {
               drawerProps.navigation.closeDrawer();
-              setActiveFilters([]);
+              clearFilters();
             }}
           />
         )}

@@ -1,12 +1,11 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
-export type ItemType = any;
-
-export type FilterFn = (item: ItemType) => boolean;
+export type FilterId = string;
 
 export interface FilterContextType {
-  activeFilters: FilterFn[];
-  setActiveFilters: React.Dispatch<React.SetStateAction<FilterFn[]>>;
+  activeFilterIds: FilterId[];
+  toggleFilter: (filterId: string) => void;
+  clearFilters: () => void;
 }
 
 export const FilterContext = createContext<FilterContextType | undefined>(
@@ -15,19 +14,35 @@ export const FilterContext = createContext<FilterContextType | undefined>(
 
 export interface FilterProviderProps {
   children: ReactNode;
-  initialFilters?: FilterFn[];
+  initialFilters?: FilterId[];
 }
 
 export const FilterProvider = ({
   children,
   initialFilters,
 }: FilterProviderProps) => {
-  const [activeFilters, setActiveFilters] = useState<FilterFn[]>(() => {
+  const [activeFilterIds, setActiveFilterIds] = useState<FilterId[]>(() => {
     return initialFilters ?? [];
   });
 
+  const toggleFilter = (filterId: FilterId) => {
+    setActiveFilterIds((currFilterIds) => {
+      if (currFilterIds.includes(filterId)) {
+        return currFilterIds.filter((id) => id !== filterId);
+      }
+
+      return [...currFilterIds, filterId];
+    });
+  };
+
+  const clearFilters = () => {
+    setActiveFilterIds([]);
+  };
+
   return (
-    <FilterContext.Provider value={{ activeFilters, setActiveFilters }}>
+    <FilterContext.Provider
+      value={{ activeFilterIds, toggleFilter, clearFilters }}
+    >
       {children}
     </FilterContext.Provider>
   );

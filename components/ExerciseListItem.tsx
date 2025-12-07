@@ -18,9 +18,14 @@ export default function ExerciseListItem({ item }: ExerciseListItemProps) {
       onPress={() => router.push(`/details/${item.name}`)}
     >
       <View>
-        <Text className="text-base font-semibold text-foreground-secondary">
-          {item.name}
-        </Text>
+        <View className="flex-row gap-2 items-center">
+          <Text className="text-base font-semibold text-foreground-secondary">
+            {item.name}
+          </Text>
+          {item.is_favorite && (
+            <Ionicons name="star" size={15} color={colors.primary} />
+          )}
+        </View>
         <Text className="text-sm mt-1 text-foreground-secondary">
           {item.muscle_group} - {item.target_muscle}
         </Text>

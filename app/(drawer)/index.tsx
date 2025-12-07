@@ -2,7 +2,7 @@ import { ThemeColors, useThemeColors } from '@/hooks/useThemeColors';
 import { UserExercise, useUserExercises } from '@/hooks/useUserExercises';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -22,37 +22,30 @@ import { useFilters } from '@/context/FilterContext';
 export default function Index() {
   const colors: ThemeColors = useThemeColors();
   const insets = useSafeAreaInsets();
+
+  const { activeFilterIds } = useFilters();
   const [searchText, setSearchText] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  const defaultFilter = (exercise: UserExercise, text: string) => {
-    if (!text) return true;
+  // 2. Debounce Search Input (Wait 300ms before querying DB)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchText);
+    }, 300);
 
-    const lowerText = text.toLowerCase();
-    return (
-      exercise.name.toLowerCase().includes(lowerText) ||
-      exercise.muscle_group.toLowerCase().includes(lowerText) ||
-      exercise.target_muscle.toLowerCase().includes(lowerText)
-    );
-  };
-
-  const { activeFilters } = useFilters();
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
 
   const navigation = useNavigation();
 
   // TODO, use an actual non-guest user
-  const { exercises, isLoading } = useUserExercises(1);
-
-  const filteredExercises = useMemo(() => {
-    return exercises.filter((exercise) => {
-      if (!defaultFilter(exercise, searchText)) return false;
-
-      for (let i = 0; i < activeFilters.length; ++i) {
-        if (!activeFilters[i](exercise)) return false;
-      }
-
-      return true;
-    });
-  }, [exercises, searchText]);
+  const { exercises, loadMore, isLoading } = useUserExercises(
+    1,
+    debouncedSearch,
+    activeFilterIds
+  );
 
   const renderItem: ListRenderItem<UserExercise> = ({
     item,
@@ -60,16 +53,14 @@ export default function Index() {
     item: UserExercise;
   }) => <ExerciseListItem item={item} />;
 
-  if (isLoading) {
+  const renderFooter = () => {
+    if (!isLoading || exercises.length === 0) return null;
     return (
-      <View className="flex-1 bg-background-secondary justify-center items-center">
-        <ActivityIndicator size="large" color={colors.foreground} />
-        <Text className="text-foreground-secondary mt-4">
-          Loading exercises...
-        </Text>
+      <View className="py-4">
+        <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -82,18 +73,30 @@ export default function Index() {
         onChangeText={setSearchText}
         onFilterPress={() => navigation.dispatch(DrawerActions.openDrawer())}
       />
-      <FlatList
-        data={filteredExercises}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        className="flex-1 bg-background-secondary"
-        contentContainerStyle={{
-          paddingBottom: 100 + insets.bottom,
-          paddingHorizontal: 16,
-          paddingTop: 16,
-        }}
-        keyboardDismissMode="on-drag"
-      />
+      {isLoading && exercises.length === 0 ? (
+        <View className="flex-1 bg-background-secondary justify-center items-center">
+          <ActivityIndicator size="large" color={colors.foreground} />
+          <Text className="text-foreground-secondary mt-4">
+            Loading exercises...
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={exercises}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          className="flex-1 bg-background-secondary"
+          contentContainerStyle={{
+            paddingBottom: 100 + insets.bottom,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+          }}
+          keyboardDismissMode="on-drag"
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+        />
+      )}
       <FloatingActionButton
         text="Add +"
         style={{ paddingBottom: insets.bottom + 20 }}

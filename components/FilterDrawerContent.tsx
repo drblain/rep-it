@@ -3,7 +3,7 @@ import { FilterId, useFilters } from '@/context/FilterContext';
 import { FILTER_OPTIONS } from '@/context/exerciseFilters';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,8 +16,12 @@ export default function FilterDrawerContent({
 }: FilterDrawerContentProps) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { activeFilterIds, toggleFilter, clearFilters } = useFilters();
+  const { activeFilterIds, setFilters } = useFilters();
   const [draftFilters, setDraftFilters] = useState<FilterId[]>([]);
+
+  useEffect(() => {
+    setDraftFilters(activeFilterIds);
+  }, [activeFilterIds]);
 
   const toggleDraftFilter = (filterId: FilterId) => {
     setDraftFilters((currDraftFilters) => {
@@ -29,19 +33,15 @@ export default function FilterDrawerContent({
     });
   };
 
-  // TODO: This is broken. Sometimes a filter gets "stuck".
   const handleApply = () => {
     drawerProps.navigation.closeDrawer();
-    draftFilters.forEach((filterId: FilterId) => {
-      toggleFilter(filterId);
-    });
-    setDraftFilters([]);
+    setFilters(draftFilters);
   };
 
   const handleClear = () => {
-    drawerProps.navigation.closeDrawer();
     setDraftFilters([]);
-    clearFilters();
+    setFilters([]);
+    drawerProps.navigation.closeDrawer();
   };
 
   return (
@@ -56,33 +56,28 @@ export default function FilterDrawerContent({
         {...drawerProps}
         contentContainerStyle={{ paddingTop: 0 }}
       >
-        {
-          // TODO: The breakup of the sections here sucks
-          // maybe make it so just the muscles are listed and when the user selects one a secondary box appears
-          // this second box would be to select that its the primary mover in the exercise
-          FILTER_OPTIONS.map((section) => (
-            <View key={section.label} className="mb-4">
-              <Text className="font-bold text-lg px-4 mb-2 text-foreground opacity-60 uppercase tracking-wider">
-                {section.label}
-              </Text>
-              {section.data.map((filter) => (
-                <FilterItem
-                  key={filter.id}
-                  label={filter.label}
-                  isActive={activeFilterIds.includes(filter.id)}
-                  onPress={() => toggleDraftFilter(filter.id)}
-                />
-              ))}
-            </View>
-          ))
-        }
+        {FILTER_OPTIONS.map((section) => (
+          <View key={section.label} className="mb-4">
+            <Text className="font-bold text-lg px-4 mb-2 text-foreground opacity-60 uppercase tracking-wider">
+              {section.label}
+            </Text>
+            {section.data.map((filter) => (
+              <FilterItem
+                key={filter.id}
+                label={filter.label}
+                isActive={draftFilters.includes(filter.id)}
+                onPress={() => toggleDraftFilter(filter.id)}
+              />
+            ))}
+          </View>
+        ))}
       </DrawerContentScrollView>
       <View
         className="p-4 border-t border-border"
         style={{ paddingBottom: insets.bottom }}
       >
         <DrawerItem
-          label="Apply Filters"
+          label={draftFilters.length > 0 ? 'Apply' : 'Close'}
           style={{
             backgroundColor: colors.primary,
             borderRadius: 12,
@@ -92,17 +87,19 @@ export default function FilterDrawerContent({
             color: colors.primaryForeground,
             textAlign: 'center',
             fontWeight: 'bold',
+            fontSize: 20,
           }}
           onPress={handleApply}
         />
         {draftFilters.length > 0 && (
           <DrawerItem
-            label="Clear Filters"
+            label="Clear"
             style={{ backgroundColor: colors.primary, borderRadius: 12 }}
             labelStyle={{
               color: colors.primaryForeground,
               textAlign: 'center',
               fontWeight: 'bold',
+              fontSize: 20,
             }}
             onPress={handleClear}
           />

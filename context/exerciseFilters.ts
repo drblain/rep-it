@@ -4,15 +4,13 @@ import {
   exercise_muscles,
   exercises,
   muscle_groups,
-  muscles,
   user_exercises,
 } from '@/db/schema';
 import { and, eq, exists } from 'drizzle-orm';
 const PREFIXES = {
   FAVORITE: 'fav',
   GROUP: 'group',
-  ANY_MUSCLE: 'any',
-  PRIMARY_MUSCLE: 'primary',
+  MUSCLE: 'muscle',
 } as const;
 
 export const makeFilterId = (prefix: string, value: string | number) =>
@@ -21,9 +19,7 @@ export const makeFilterId = (prefix: string, value: string | number) =>
 export const FILTER_OPTIONS = [
   {
     label: 'General',
-    data: [
-      { label: 'Favorites Only', id: makeFilterId(PREFIXES.FAVORITE, 'true') },
-    ],
+    data: [{ label: 'Favorited', id: makeFilterId(PREFIXES.FAVORITE, 'true') }],
   },
   {
     label: 'Muscle Groups',
@@ -33,17 +29,10 @@ export const FILTER_OPTIONS = [
     })),
   },
   {
-    label: 'Primary Muscle',
+    label: 'Muscle',
     data: Object.entries(dbConsts.MUSCLE_COMMON_NAMES).map(([id, label]) => ({
-      label: `${label} (Primary)`,
-      id: makeFilterId(PREFIXES.PRIMARY_MUSCLE, id),
-    })),
-  },
-  {
-    label: 'Any Role (Primary or Secondary)',
-    data: Object.entries(dbConsts.MUSCLE_COMMON_NAMES).map(([id, label]) => ({
-      label: `${label} (Any)`,
-      id: makeFilterId(PREFIXES.ANY_MUSCLE, id),
+      label: `${label}`,
+      id: makeFilterId(PREFIXES.MUSCLE, id),
     })),
   },
 ];
@@ -57,9 +46,7 @@ export const getSqlConditionForFilterId = (filterId: string) => {
       return eq(user_exercises.isFavorite, true);
     case PREFIXES.GROUP:
       return eq(muscle_groups.id, numericValue);
-    case PREFIXES.PRIMARY_MUSCLE:
-      return eq(muscles.id, numericValue);
-    case PREFIXES.ANY_MUSCLE:
+    case PREFIXES.MUSCLE:
       return exists(
         db
           .select()

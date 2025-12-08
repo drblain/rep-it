@@ -4,8 +4,7 @@ export type FilterId = string;
 
 export interface FilterContextType {
   activeFilterIds: FilterId[];
-  toggleFilter: (filterId: string) => void;
-  clearFilters: () => void;
+  setFilters: (filterIds: FilterId[]) => void;
 }
 
 export const FilterContext = createContext<FilterContextType | undefined>(
@@ -25,24 +24,12 @@ export const FilterProvider = ({
     return initialFilters ?? [];
   });
 
-  const toggleFilter = (filterId: FilterId) => {
-    setActiveFilterIds((currFilterIds) => {
-      if (currFilterIds.includes(filterId)) {
-        return currFilterIds.filter((id) => id !== filterId);
-      }
-
-      return [...currFilterIds, filterId];
-    });
-  };
-
-  const clearFilters = () => {
-    setActiveFilterIds([]);
+  const setFilters = (filterIds: FilterId[]) => {
+    setActiveFilterIds(filterIds);
   };
 
   return (
-    <FilterContext.Provider
-      value={{ activeFilterIds, toggleFilter, clearFilters }}
-    >
+    <FilterContext.Provider value={{ activeFilterIds, setFilters }}>
       {children}
     </FilterContext.Provider>
   );

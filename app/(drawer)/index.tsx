@@ -1,5 +1,6 @@
+import { UserExercise } from '@/db/types';
 import { ThemeColors, useThemeColors } from '@/hooks/useThemeColors';
-import { UserExercise, useUserExercises } from '@/hooks/useUserExercises';
+import { useUserExercises } from '@/hooks/useUserExercises';
 import { DrawerActions } from '@react-navigation/native';
 import { useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';

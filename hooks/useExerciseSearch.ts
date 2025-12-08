@@ -1,5 +1,3 @@
-import { getSqlConditionForFilterId } from '@/context/exerciseFilters';
-import { FilterId } from '@/context/FilterContext';
 import { db } from '@/db/client';
 import { PAGE_SIZE } from '@/db/constants';
 import {
@@ -7,19 +5,14 @@ import {
   exercises,
   muscle_groups,
   muscles,
-  user_exercises,
 } from '@/db/schema';
-import { UserExercise } from '@/db/types';
+import { SearchResult } from '@/db/types';
 import { parseTargetMuscle } from '@/db/utils';
-import { and, asc, eq, like, or, sql } from 'drizzle-orm';
+import { asc, eq, like, or, sql } from 'drizzle-orm';
 import { useCallback, useEffect, useState } from 'react';
 
-export function useUserExercises(
-  userId: number,
-  filterText: string,
-  activeFilterIds: FilterId[]
-) {
-  const [data, setData] = useState<UserExercise[]>([]);
+export function useExerciseSearch(searchText: string) {
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,32 +26,10 @@ export function useUserExercises(
       setIsLoading(true);
 
       try {
-        const conditions = [eq(user_exercises.userId, userId)];
-
-        if (filterText) {
-          const searchPattern = `%${filterText}%`;
-          conditions.push(
-            or(
-              like(exercises.name, searchPattern),
-              like(muscle_groups.name, searchPattern),
-              like(muscles.commonName, searchPattern),
-              like(muscles.name, searchPattern)
-            )!
-          );
-        }
-
-        activeFilterIds.forEach((filterId: FilterId) => {
-          const sqlCondition = getSqlConditionForFilterId(filterId);
-          if (sqlCondition) {
-            conditions.push(sqlCondition);
-          }
-        });
-
-        const results = await db
+        const query = await db
           .select({
-            id: sql<string>`cast(${user_exercises.id} AS text)`,
+            id: sql<string>`cast(${exercises.id} AS text)`,
             name: exercises.name,
-            is_favorite: user_exercises.isFavorite,
             muscle_group: muscle_groups.name,
             muscles_data: sql<string>`
               GROUP_CONCAT(
@@ -69,21 +40,27 @@ export function useUserExercises(
               )
             `,
           })
-          .from(user_exercises)
-          .leftJoin(exercises, eq(user_exercises.exerciseId, exercises.id))
+          .from(exercises)
           .leftJoin(
             exercise_muscles,
             eq(exercises.id, exercise_muscles.exerciseId)
           )
           .leftJoin(muscles, eq(exercise_muscles.muscleId, muscles.id))
           .leftJoin(muscle_groups, eq(muscles.muscleGroupId, muscle_groups.id))
-          .where(and(...conditions))
+          .where(
+            or(
+              like(exercises.name, searchText),
+              like(muscle_groups.name, searchText),
+              like(muscles.commonName, searchText),
+              like(muscles.name, searchText)
+            )
+          )
           .orderBy(asc(exercises.name))
           .groupBy(exercises.id)
           .limit(PAGE_SIZE)
           .offset(pageNum * PAGE_SIZE);
 
-        const processedResults = results.map((row) => {
+        const processedResults = query.map((row) => {
           const targetMuscle = parseTargetMuscle(row.muscles_data);
 
           return {
@@ -92,15 +69,15 @@ export function useUserExercises(
           };
         });
 
-        if (results.length < PAGE_SIZE) {
+        if (query.length < PAGE_SIZE) {
           setHasMore(false);
         }
 
-        setData(
-          (previousData) =>
+        setResults(
+          (previousResults) =>
             (pageNum === 0
               ? processedResults
-              : [...previousData, ...processedResults]) as UserExercise[]
+              : [...previousResults, ...processedResults]) as SearchResult[]
         );
       } catch (error) {
         console.log('Failed to fetch exercises: ', error);
@@ -108,7 +85,7 @@ export function useUserExercises(
         setIsLoading(false);
       }
     },
-    [userId, filterText, activeFilterIds, hasMore, isLoading]
+    [searchText, hasMore, isLoading]
   );
 
   const refresh = () => {
@@ -117,7 +94,7 @@ export function useUserExercises(
     fetchPage(0, true);
   };
 
-  useEffect(refresh, [filterText, activeFilterIds]);
+  useEffect(refresh, [searchText]);
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
@@ -127,5 +104,5 @@ export function useUserExercises(
     }
   };
 
-  return { exercises: data, loadMore, refresh, isLoading, hasMore };
+  return { exercises: results, loadMore, refresh, isLoading, hasMore };
 }

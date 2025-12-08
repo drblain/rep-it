@@ -1,5 +1,5 @@
 import { db } from '@/db/client';
-import * as dbConsts from '@/db/constants';
+import { MUSCLE_COMMON_NAMES, MUSCLE_GROUP_LABELS } from '@/db/constants';
 import {
   exercise_muscles,
   exercises,
@@ -23,14 +23,14 @@ export const FILTER_OPTIONS = [
   },
   {
     label: 'Muscle Groups',
-    data: Object.entries(dbConsts.MUSCLE_GROUP_LABELS).map(([id, label]) => ({
+    data: Object.entries(MUSCLE_GROUP_LABELS).map(([id, label]) => ({
       label,
       id: makeFilterId(PREFIXES.GROUP, id),
     })),
   },
   {
     label: 'Muscle',
-    data: Object.entries(dbConsts.MUSCLE_COMMON_NAMES).map(([id, label]) => ({
+    data: Object.entries(MUSCLE_COMMON_NAMES).map(([id, label]) => ({
       label: `${label}`,
       id: makeFilterId(PREFIXES.MUSCLE, id),
     })),

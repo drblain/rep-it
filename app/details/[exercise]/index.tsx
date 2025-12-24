@@ -10,6 +10,7 @@ export default function ExerciseDetails() {
       <Image
         style={{ width: 50, height: 50 }}
         source={require('@/assets/images/react-logo.png')}
+        defaultSource={require('@/assets/images/react-logo.png')}
       />
     </View>
   );

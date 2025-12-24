@@ -1,5 +1,5 @@
+import { UserExercise } from '@/db/types';
 import { useThemeColors } from '@/hooks/useThemeColors';
-import { UserExercise } from '@/hooks/useUserExercises';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -15,7 +15,15 @@ export default function ExerciseListItem({ item }: ExerciseListItemProps) {
   return (
     <TouchableOpacity
       className="flex-row justify-between items-center bg-background-muted p-4 mb-3 rounded-xl shadow-sm"
-      onPress={() => router.push(`/details/${item.name}`)}
+      onPress={() =>
+        router.push({
+          pathname: '/details/[exercise]',
+          params: {
+            exercise: item.name,
+            id: item.id,
+          },
+        })
+      }
     >
       <View>
         <View className="flex-row gap-2 items-center">

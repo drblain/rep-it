@@ -1,11 +1,14 @@
 import { useThemeColors } from '@/hooks/useThemeColors';
+import { useUserSets } from '@/hooks/useUserSets';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, Tabs, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
 export default function ExerciseDetailsLayout() {
   const colors = useThemeColors();
-  const { exercise } = useLocalSearchParams();
+  const { exercise, id } = useLocalSearchParams();
+
+  const { sets } = useUserSets(1, +id);
 
   return (
     <View className="flex-1">
